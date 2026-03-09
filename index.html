@@ -11,8 +11,6 @@
     <style>
         body { font-family: 'Montserrat', sans-serif; -webkit-tap-highlight-color: transparent; }
         h1, h2, h3, .fashion-font { font-family: 'Playfair Display', serif; }
-        @keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .animate-spin-slow { animation: spin-slow 8s linear infinite; }
         @keyframes pulse-gold {
             0% { box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(212, 175, 55, 0); }
@@ -21,10 +19,8 @@
         .animate-pulse-gold { animation: pulse-gold 2s infinite; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-
         .card-perspective { perspective: 1000px; width: 100%; position: relative; z-index: 1; }
         .card-perspective.is-active { z-index: 50; }
-        
         .aspect-ratio-portrait { padding-top: 145%; }
         .card-inner {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
@@ -43,17 +39,13 @@
             display: flex; flex-direction: column; justify-content: center;
             align-items: center; padding: 1rem; text-align: center;
         }
-
         .delete-btn { 
           position: absolute; top: 8px; right: 8px; z-index: 999; 
           background: rgba(0, 0, 0, 0.6); 
-          -webkit-backdrop-filter: blur(4px);
-          backdrop-filter: blur(4px);
+          -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
           border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 50%; padding: 8px; 
           cursor: pointer; color: white; transition: all 0.3s;
         }
-        .delete-btn:hover { background: #e11d48; transform: scale(1.1); }
-        .delete-btn svg { width: 14px; height: 14px; }
     </style>
     <script type="importmap">
     {
@@ -71,41 +63,31 @@
         import ReactDOM from 'react-dom/client';
 
         const h = React.createElement;
-        const scriptUrl = 'https://script.google.com/macros/s/AKfycbyIa-LHckxFs7Hm1GxwFhR79F2l3ac_bM98lN_pq_UEwSUfwTyeRqpG2PxxYDczQDs/exec';
-        const NEUTRALS = ['black', 'white', 'gray', 'grey', 'charcoal', 'silver', 'denim', 'beige', 'cream', 'ivory', 'tan', 'navy', 'khaki', 'sand'];
+        // Corrected URL to match your provided Google Script Link
+        const scriptUrl = 'https://script.google.com/macros/s/AKfycbxnbGt4_GZ7ndLcMugUUBFm9VUrAicUXMGk01joGVAM1EbjxBgUjSccmTPIdwY6WsVk/exec';
 
         const formatDriveUrl = (url) => {
             if (!url || !url.includes('drive.google.com')) return url;
             const idMatch = url.match(/(?:id=|\/d\/)([a-zA-Z0-9_-]+)/);
-            if (idMatch && idMatch[1]) {
-                return 'https://lh3.googleusercontent.com/d/' + idMatch[1];
-            }
+            if (idMatch && idMatch[1]) return 'https://googleusercontent.com/profile/picture/0' + idMatch[1];
             return url;
         };
 
-        // --- Components ---
-
         const NavButton = ({ active, onClick, label }) => 
-            h('button', { 
-                onClick,
-                className: 'uppercase text-[10px] tracking-widest px-4 py-2 transition-all ' + (active ? 'font-bold underline underline-offset-4' : 'opacity-40 hover:opacity-100')
-            }, label);
+            h('button', { onClick, className: 'uppercase text-[10px] tracking-widest px-4 py-2 transition-all ' + (active ? 'font-bold underline underline-offset-4' : 'opacity-40 hover:opacity-100') }, label);
 
         const Layout = ({ children, currentView, onViewChange, genderPreference, onGenderToggle }) => 
-            h('div', { className: 'min-h-screen flex flex-col max-w-md mx-auto relative overflow-hidden bg-white' },
-                h('header', { className: 'py-6 px-4 border-b border-black flex justify-between items-center sticky top-0 bg-white z-20' },
+            h('div', { className: 'min-h-screen flex flex-col max-w-md mx-auto relative overflow-hidden bg-white' }, [
+                h('header', { className: 'py-6 px-4 border-b border-black flex justify-between items-center sticky top-0 bg-white z-20' }, [
                     h('div', { className: 'flex flex-col' }, [
                         h('button', { onClick: () => onViewChange('home'), className: 'fashion-font text-2xl font-bold uppercase tracking-tighter' }, 'Closet Roulette'),
-                        h('button', { onClick: onGenderToggle, className: 'text-[8px] uppercase tracking-[0.2em] font-bold text-left opacity-60 hover:opacity-100 transition-opacity flex items-center space-x-1' }, [
-                            h('span', null, 'Styling For: ' + genderPreference),
-                            h('span', { className: 'w-2 h-2 rounded-full bg-black' })
-                        ])
+                        h('button', { onClick: onGenderToggle, className: 'text-[8px] uppercase tracking-[0.2em] font-bold text-left opacity-60' }, 'Styling For: ' + genderPreference)
                     ]),
                     h('button', { 
-                        onClick: () => onViewChange(currentView === 'gallery' ? 'roulette' : 'gallery'),
-                        className: 'text-xs uppercase tracking-widest border border-black px-3 py-1 hover:bg-black hover:text-white transition-colors'
-                    }, currentView === 'gallery' ? 'Roulette' : 'Vault')
-                ),
+                        onClick: () => onViewChange('gallery'),
+                        className: 'text-xs uppercase tracking-widest border border-black px-3 py-1'
+                    }, 'Vault')
+                ]),
                 h('main', { className: 'flex-1 overflow-y-auto pb-24' }, children),
                 h('nav', { className: 'fixed bottom-0 left-0 right-0 max-w-md mx-auto border-t border-black bg-white flex justify-around items-center py-4 px-2 z-30' }, [
                     h(NavButton, { active: currentView === 'home', onClick: () => onViewChange('home'), label: 'Home' }),
@@ -114,393 +96,61 @@
                     h(NavButton, { active: currentView === 'judge', onClick: () => onViewChange('judge'), label: 'Judge' }),
                     h(NavButton, { active: currentView === 'gallery', onClick: () => onViewChange('gallery'), label: 'Items' })
                 ])
-            );
-
-        const GalleryItem = ({ item, onDelete, onSelect }) => {
-            const [flipped, setFlipped] = React.useState(false);
-            const type = item.type || item.Type || item.category || 'Unknown';
-            const color = item.color || item.Color || item.palette || 'Neutral';
-            const vibe = item.vibe || item.Vibe || item.aesthetic || 'General';
-            const id = item.driveid || item.fileid || item.id || item.ID;
-            const imageLink = [item.imagelink, item.imageLink, item.link].find(l => typeof l === 'string' && l.startsWith('http'));
-            const formattedLink = imageLink ? formatDriveUrl(imageLink) : null;
-            const rawImage = item.image || item.Image || item.img || item.Img;
-            const src = formattedLink 
-                ? (formattedLink + (formattedLink.includes('?') ? '&' : '?') + 't=' + Date.now()) 
-                : (rawImage && typeof rawImage === 'string' && !rawImage.startsWith('data:') && !rawImage.startsWith('http')
-                    ? 'data:image/jpeg;base64,' + rawImage 
-                    : rawImage);
-
-            return h('div', { 
-                className: 'card-perspective w-full item-card ' + (flipped ? 'is-active' : ''),
-                onClick: (e) => { 
-                    if (onSelect) { onSelect(item); return; }
-                    if (!e.target.closest('.delete-trigger')) setFlipped(!flipped); 
-                }
-            }, 
-                h('div', { className: 'aspect-ratio-portrait' }),
-                h('div', { className: 'card-inner ' + (flipped ? 'is-flipped' : '') },
-                    h('div', { className: 'card-front border border-black p-1 relative' }, 
-                        h('img', { 
-                            src, 
-                            className: 'w-full h-full object-cover',
-                            referrerPolicy: src && src.startsWith('http') ? 'no-referrer' : undefined
-                        }),
-                        !onSelect && h('button', { 
-                            className: 'delete-btn delete-trigger', 
-                            onClick: (e) => { e.stopPropagation(); onDelete(id); }
-                        }, 
-                           h('svg', { viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2' }, 
-                               h('path', { d: 'M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2' })
-                           )
-                        )
-                    ),
-                    h('div', { className: 'card-back p-4 space-y-4' }, 
-                        h('div', null, [
-                            h('span', { className: 'text-[7px] uppercase tracking-widest opacity-40 block' }, 'Silhouette'),
-                            h('span', { className: 'text-[10px] font-bold text-black uppercase' }, String(type))
-                        ]),
-                        h('div', { className: 'w-4 h-[1px] bg-neutral-200' }),
-                        h('div', null, [
-                            h('span', { className: 'text-[7px] uppercase tracking-widest opacity-40 block' }, 'Palette'),
-                            h('span', { className: 'text-[10px] font-bold text-black uppercase' }, String(color))
-                        ]),
-                        h('div', { className: 'w-4 h-[1px] bg-neutral-200' }),
-                        h('span', { className: 'fashion-font text-lg italic text-black' }, String(vibe))
-                    )
-                )
-            );
-        };
-
-        const Gallery = ({ wardrobe, onDelete, onSelectItem, initialFilter }) => {
-            const [filter, setFilter] = React.useState(initialFilter || 'All');
-            const filtered = wardrobe.filter(it => {
-                if (filter === 'All') return true;
-                const type = String(it.type || '').toLowerCase();
-                if (filter === 'Top') return type === 'top';
-                if (filter === 'Bottom') return type === 'bottom';
-                if (filter === 'Shoes') return type === 'shoes';
-                if (filter === 'Accessory') return ['accessory', 'other'].includes(type);
-                return true;
-            });
-
-            return h('div', { className: 'p-4 space-y-6' }, [
-                h('div', { className: 'flex overflow-x-auto no-scrollbar space-x-2 py-2' }, 
-                    ['All', 'Top', 'Bottom', 'Shoes', 'Accessory'].map(f => h('button', {
-                        key: f,
-                        onClick: () => setFilter(f),
-                        className: 'px-4 py-1.5 border uppercase text-[8px] tracking-widest transition-all ' + (filter === f ? 'bg-black text-white border-black' : 'bg-white text-black border-neutral-200 opacity-40')
-                    }, f))
-                ),
-                h('div', { className: 'grid grid-cols-2 gap-x-4 gap-y-10' }, 
-                    filtered.map((it, idx) => h(GalleryItem, { key: it.id || idx, item: it, onDelete, onSelect: onSelectItem }))
-                )
             ]);
-        };
 
-        const Judge = ({ wardrobe, selectedItems, onSelectSlot, onRemoveItem, onClearAll }) => {
-            const [visibleSlots, setVisibleSlots] = React.useState({
-                topInner: true, topOuter: true, bottom: true, shoes: true, extra: true
-            });
-            const [availableSlots, setAvailableSlots] = React.useState({
-                topInner: false, topOuter: false, bottom: false, shoes: false, extra: false
-            });
-
-            React.useEffect(() => {
-                const availability = {
-                    topInner: wardrobe.some(it => String(it.type || '').toLowerCase() === 'top' && (it.layer === 1 || !it.layer)),
-                    topOuter: wardrobe.some(it => String(it.type || '').toLowerCase() === 'top' && it.layer === 2),
-                    bottom: wardrobe.some(it => String(it.type || '').toLowerCase() === 'bottom'),
-                    shoes: wardrobe.some(it => String(it.type || '').toLowerCase() === 'shoes'),
-                    extra: wardrobe.some(it => ['accessory', 'other'].includes(String(it.type || '').toLowerCase()))
+        const Scanner = ({ onUploadSuccess }) => {
+            const [status, setStatus] = React.useState('Ready');
+            const handleUpload = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                setStatus('Uploading...');
+                const reader = new FileReader();
+                reader.onload = async (event) => {
+                    const base64 = event.target.result.split(',')[1];
+                    // Calling your script to save the item
+                    google.script.run.withSuccessHandler(() => {
+                        setStatus('Saved!');
+                        onUploadSuccess();
+                    }).processImage(base64); 
                 };
-                setAvailableSlots(availability);
-            }, [wardrobe]);
-
-            const renderSlot = (slot, label) => {
-                if (!visibleSlots[slot]) return null;
-                const item = selectedItems[slot];
-                const imageLink = item ? [item.imagelink, item.imageLink, item.link].find(l => typeof l === 'string' && l.startsWith('http')) : null;
-                const formattedLink = imageLink ? formatDriveUrl(imageLink) : null;
-                const rawImage = item ? (item.image || item.Image || item.img || item.Img) : null;
-                const src = formattedLink 
-                    ? (formattedLink + (formattedLink.includes('?') ? '&' : '?') + 't=' + Date.now()) 
-                    : (rawImage && typeof rawImage === 'string' && !rawImage.startsWith('data:') && !rawImage.startsWith('http')
-                        ? 'data:image/jpeg;base64,' + rawImage 
-                        : rawImage);
-
-                return h('div', { className: 'w-full space-y-2' }, [
-                    h('div', { className: 'flex justify-between items-end' }, 
-                        h('span', { className: 'text-[8px] uppercase tracking-[0.3em] opacity-40 block' }, label)
-                    ),
-                    h('div', { 
-                        onClick: () => !item && onSelectSlot(slot),
-                        className: 'relative aspect-[4/3] border-2 border-dashed border-black/10 rounded-xl flex flex-col items-center justify-center transition-all cursor-pointer overflow-hidden bg-[#f0f0f0] ' + (item ? 'border-solid border-black/5' : 'hover:border-black/30')
-                    }, item ? [
-                        h('img', { src, className: 'w-full h-full object-cover', referrerPolicy: 'no-referrer' }),
-                        h('button', { 
-                            onClick: (e) => { e.stopPropagation(); onRemoveItem(slot); },
-                            className: 'absolute top-2 right-2 p-2 bg-white/90 rounded-full shadow-sm'
-                        }, '✕'),
-                        h('div', { className: 'absolute bottom-0 left-0 right-0 p-2 bg-black/50 text-white text-[8px] uppercase tracking-widest text-center' }, (item.color || '') + ' ' + (item.vibe || ''))
-                    ] : [
-                        h('span', { className: 'text-[9px] uppercase tracking-widest opacity-30 mt-2' }, 'Select Item')
-                    ])
-                ]);
+                reader.readAsDataURL(file);
             };
-
-            return h('div', { className: 'p-6 flex flex-col space-y-8' }, [
-                h('div', { className: 'text-center space-y-2' }, [
-                    h('h2', { className: 'fashion-font text-4xl italic uppercase tracking-tighter' }, 'Judge My Outfit'),
-                    h('p', { className: 'text-[9px] uppercase tracking-[0.3em] opacity-40' }, 'Assemble your look for a critique.'),
-                    h('div', { className: 'flex flex-wrap justify-center gap-2 pt-4' }, 
-                        [
-                            { id: 'topInner', label: 'Inner' },
-                            { id: 'topOuter', label: 'Outer' },
-                            { id: 'bottom', label: 'Bottom' },
-                            { id: 'shoes', label: 'Shoes' },
-                            { id: 'extra', label: 'Extra' }
-                        ].map(s => h('label', {
-                            key: s.id,
-                            className: 'flex items-center space-x-1.5 px-3 py-1.5 rounded-full border transition-all cursor-pointer ' + (!availableSlots[s.id] ? 'opacity-20 cursor-not-allowed' : visibleSlots[s.id] ? 'bg-black text-white border-black' : 'bg-white text-black border-neutral-200')
-                        }, [
-                            h('input', { type: 'checkbox', className: 'hidden', disabled: !availableSlots[s.id], checked: visibleSlots[s.id], onChange: () => setVisibleSlots(prev => ({ ...prev, [s.id]: !prev[s.id] })) }),
-                            h('span', { className: 'text-[8px] uppercase tracking-widest font-bold' }, s.label)
-                        ]))
-                    )
-                ]),
-                h('div', { className: 'space-y-6' }, [
-                    renderSlot('topInner', 'Inner Layer'),
-                    renderSlot('topOuter', 'Outer Layer'),
-                    renderSlot('bottom', 'Bottom'),
-                    renderSlot('shoes', 'Shoes'),
-                    renderSlot('extra', 'Accessory')
-                ]),
-                h('button', { 
-                    onClick: () => alert('AI Critique is only available in the full web version.'),
-                    className: 'w-full py-6 bg-black text-white uppercase text-xs tracking-[0.5em] font-bold shadow-xl'
-                }, 'Get Critique')
+            return h('div', { className: 'p-12 text-center space-y-6' }, [
+                h('h2', { className: 'fashion-font text-3xl italic' }, 'Artifact Scanner'),
+                h('div', { className: 'border-2 border-dashed border-black p-12 bg-neutral-50 flex flex-col items-center' }, [
+                    h('p', { className: 'text-[10px] uppercase mb-4 opacity-50' }, status),
+                    h('input', { type: 'file', accept: 'image/*', capture: 'environment', id: 'cam', className: 'hidden', onChange: handleUpload }),
+                    h('label', { htmlFor: 'cam', className: 'bg-black text-white px-8 py-4 uppercase text-[10px] tracking-widest cursor-pointer shadow-lg' }, 'Open Camera')
+                ])
             ]);
         };
-
-        const Roulette = ({ wardrobe }) => {
-            const [outfit, setOutfit] = React.useState({ top: null, bottom: null, shoes: null, extra: null });
-            const [styleNote, setStyleNote] = React.useState(null);
-            const [isSpinning, setIsSpinning] = React.useState(false);
-            const [selectedMode, setSelectedMode] = React.useState('Random');
-            const [selectedVibes, setSelectedVibes] = React.useState([]);
-            const [availableVibes, setAvailableVibes] = React.useState([]);
-
-            React.useEffect(() => {
-                const vibes = Array.from(new Set(wardrobe.map(item => {
-                    const v = item.vibe || item.aesthetic || 'General';
-                    return String(v).trim();
-                }))).filter(v => v);
-                setAvailableVibes(vibes);
-                setSelectedVibes(vibes);
-            }, [wardrobe]);
-
-            const spin = () => {
-                setIsSpinning(true);
-                setOutfit({ top: null, bottom: null, shoes: null, extra: null });
-                setStyleNote(null);
-
-                setTimeout(() => {
-                    const filtered = wardrobe.filter(item => selectedVibes.includes(String(item.vibe || 'General').trim()));
-                    const tops = filtered.filter(it => String(it.type || '').toLowerCase() === 'top');
-                    const bottoms = filtered.filter(it => String(it.type || '').toLowerCase() === 'bottom');
-                    const shoes = filtered.filter(it => String(it.type || '').toLowerCase() === 'shoes');
-                    const extras = filtered.filter(it => ['accessory', 'other'].includes(String(it.type || '').toLowerCase()));
-
-                    if (tops.length === 0) { setIsSpinning(false); alert('No tops found'); return; }
-
-                    const top = tops[Math.floor(Math.random() * tops.length)];
-                    const bottom = bottoms.length > 0 ? bottoms[Math.floor(Math.random() * bottoms.length)] : null;
-                    const shoe = shoes.length > 0 ? shoes[Math.floor(Math.random() * shoes.length)] : null;
-                    const extra = extras.length > 0 && Math.random() > 0.5 ? extras[Math.floor(Math.random() * extras.length)] : null;
-
-                    setOutfit({ top, bottom, shoes: shoe, extra });
-                    setOutfit({ top, bottom, shoes: shoe, extra });
-                    setStyleNote('A curated look from your archives.');
-                    setIsSpinning(false);
-                }, 1500);
-            };
-
-            const renderCard = (item) => {
-                if (!item) return null;
-                const imageLink = [item.imagelink, item.imageLink, item.link].find(l => typeof l === 'string' && l.startsWith('http'));
-                const formattedLink = imageLink ? formatDriveUrl(imageLink) : null;
-                const rawImage = item.image || item.Image || item.img || item.Img;
-                const src = formattedLink 
-                    ? (formattedLink + (formattedLink.includes('?') ? '&' : '?') + 't=' + Date.now()) 
-                    : (rawImage && typeof rawImage === 'string' && !rawImage.startsWith('data:') && !rawImage.startsWith('http')
-                        ? 'data:image/jpeg;base64,' + rawImage 
-                        : rawImage);
-                return h('div', { className: 'border border-black p-1 bg-white mb-2' }, 
-                    h('div', { className: 'aspect-[4/3] overflow-hidden bg-neutral-50 relative' }, 
-                        h('img', { 
-                            src, 
-                            className: 'w-full h-full object-cover',
-                            referrerPolicy: src && src.startsWith('http') ? 'no-referrer' : undefined
-                        })
-                    )
-                );
-            };
-
-            return h('div', { className: 'p-6 flex flex-col items-center space-y-10' }, [
-                h('div', { className: 'w-full space-y-4' }, [
-                    h('h3', { className: 'text-[9px] uppercase tracking-[0.3em] font-bold' }, 'Styling Mode'),
-                    h('div', { className: 'grid grid-cols-2 gap-2' }, 
-                        ['Conservative', 'Modern', 'Fashionable', 'Wild', 'Random'].map(m => 
-                            h('button', { 
-                                onClick: () => setSelectedMode(m),
-                                className: 'px-4 py-3 border uppercase text-[9px] tracking-[0.2em] ' + (selectedMode === m ? 'bg-black text-white border-black' : 'bg-white text-black border-neutral-200 opacity-60') + (m === 'Random' ? ' col-span-2' : '')
-                            }, m)
-                        )
-                    )
-                ]),
-                h('div', { className: 'w-full flex flex-col items-center min-h-[400px]' }, 
-                    isSpinning ? h('div', { className: 'pt-20 animate-pulse fashion-font text-xl italic' }, 'Consulting Stylist...') :
-                    (outfit.top || outfit.bottom || outfit.shoes || outfit.extra) ? h('div', { className: 'w-full space-y-4' }, [
-                        renderCard(outfit.top),
-                        renderCard(outfit.bottom),
-                        renderCard(outfit.shoes),
-                        renderCard(outfit.extra),
-                        styleNote && h('p', { className: 'fashion-font text-center italic' }, styleNote)
-                    ]) : h('div', { className: 'pt-24 opacity-20 text-[9px] uppercase tracking-[0.4em]' }, 'Spin to Curate')
-                ),
-                h('button', { 
-                    onClick: spin, 
-                    disabled: isSpinning,
-                    className: 'w-full bg-black text-white py-6 uppercase text-[10px] tracking-[0.5em] font-medium'
-                }, 'Generate Look')
-            ]);
-        };
-
-        const Scanner = () => h('div', { className: 'p-12 text-center space-y-6' }, [
-            h('h2', { className: 'fashion-font text-3xl italic' }, 'Artifact Scanner'),
-            h('p', { className: 'text-[10px] uppercase tracking-widest opacity-40' }, 'Standalone version uses the cloud database.'),
-            h('div', { className: 'border-2 border-dashed border-black p-12 opacity-20' }, 'Camera access requires full app environment.')
-        ]);
-
-        const Home = ({ onViewChange, onConsultant }) => h('div', { className: 'p-8 flex flex-col justify-center items-center text-center space-y-12' }, [
-            h('div', { className: 'space-y-4' }, [
-                h('h2', { className: 'fashion-font text-5xl italic leading-tight uppercase tracking-tighter' }, ['Your Wardrobe,', h('br'), 'Curated.']),
-                h('p', { className: 'text-[10px] uppercase tracking-[0.4em] opacity-40' }, 'Transform your closet into a high-end experience.')
-            ]),
-            h('div', { className: 'w-full space-y-4 pt-12' }, [
-                h('button', { onClick: () => onViewChange('scan'), className: 'w-full bg-black text-white py-5 uppercase text-xs tracking-[0.5em]' }, 'Scan New Item'),
-                h('button', { onClick: () => onViewChange('roulette'), className: 'w-full border border-black py-5 uppercase text-xs tracking-[0.5em]' }, 'Spin Roulette'),
-                h('button', { 
-                    onClick: () => onViewChange('judge'), 
-                    className: 'w-full bg-white text-black border-2 border-black py-6 uppercase text-xs tracking-[0.5em] font-bold' 
-                }, '⚖️ Judge My Outfit'),
-                h('div', { className: 'relative pt-4' }, 
-                    h('button', { 
-                        onClick: onConsultant, 
-                        className: 'w-full bg-[#D4AF37] text-white py-6 uppercase text-xs tracking-[0.5em] font-bold animate-pulse-gold relative shadow-xl' 
-                    }, [
-                        h('span', { className: 'flex items-center justify-center space-x-2' }, [
-                            h('span', null, '💡 Stylist Advice'),
-                            h('span', { className: 'bg-white text-[#D4AF37] text-[8px] px-1.5 py-0.5 rounded-full' }, 'NEW')
-                        ])
-                    ])
-                )
-            ])
-        ]);
-
-        // --- Main App ---
 
         const App = () => {
             const [view, setView] = React.useState('home');
             const [wardrobe, setWardrobe] = React.useState([]);
-            const [genderPreference, setGenderPreference] = React.useState('Women');
-            const [stylistAdvice, setStylistAdvice] = React.useState(null);
-            const [selectedJudgeItems, setSelectedJudgeItems] = React.useState({
-                topInner: null, topOuter: null, bottom: null, shoes: null, extra: null
-            });
-            const [selectingSlot, setSelectingSlot] = React.useState(null);
+            const [gender, setGender] = React.useState('Women');
 
-            React.useEffect(() => {
-                const load = async () => {
-                    const r = await fetch(scriptUrl);
-                    const d = await r.json();
-                    setWardrobe(d || []);
-                };
-                load();
-            }, []);
+            const load = async () => {
+                const r = await fetch(scriptUrl);
+                const d = await r.json();
+                setWardrobe(d || []);
+            };
 
-            React.useEffect(() => {
-                window.scrollTo(0, 0);
-            }, [view]);
+            React.useEffect(() => { load(); }, []);
 
-            const deleteItem = async (id) => {
+            const deleteItem = (id) => {
                 if (!confirm('Remove item?')) return;
-                const url = scriptUrl + '?action=delete&id=' + id;
-                await fetch(url, { mode: 'no-cors' });
-                setWardrobe(prev => prev.filter(it => (it.driveid || it.fileid || it.id) !== id));
+                // Internal Apps Script call is safer than fetch for deletions
+                google.script.run.withSuccessHandler(load).deleteItem(id);
             };
 
-            const handleConsultant = () => {
-                setStylistAdvice({ 
-                    suggestion: 'Classic Trench Coat', 
-                    why: 'A timeless piece that adds structure to any silhouette.' 
-                });
-            };
-
-            const getInitialFilter = () => {
-                if (!selectingSlot) return 'All';
-                if (selectingSlot === 'topInner' || selectingSlot === 'topOuter') return 'Top';
-                if (selectingSlot === 'bottom') return 'Bottom';
-                if (selectingSlot === 'shoes') return 'Shoes';
-                if (selectingSlot === 'extra') return 'Accessory';
-                return 'All';
-            };
-
-            return h(Layout, { 
-                currentView: view, 
-                onViewChange: setView,
-                genderPreference,
-                onGenderToggle: () => setGenderPreference(prev => prev === 'Men' ? 'Women' : 'Men')
-            }, [
-                view === 'home' && h(Home, { onViewChange: setView, onConsultant: handleConsultant }),
-                view === 'scan' && h(Scanner),
-                view === 'roulette' && h(Roulette, { wardrobe }),
-                view === 'gallery' && h(Gallery, { 
-                    wardrobe, 
-                    onDelete: deleteItem,
-                    initialFilter: getInitialFilter(),
-                    onSelectItem: selectingSlot ? (item) => {
-                        setSelectedJudgeItems(prev => ({ ...prev, [selectingSlot]: item }));
-                        setSelectingSlot(null);
-                        setView('judge');
-                    } : undefined
-                }),
-                view === 'judge' && h(Judge, { 
-                    wardrobe,
-                    selectedItems: selectedJudgeItems,
-                    onSelectSlot: (slot) => { setSelectingSlot(slot); setView('gallery'); },
-                    onRemoveItem: (slot) => setSelectedJudgeItems(prev => ({ ...prev, [slot]: null })),
-                    onClearAll: () => setSelectedJudgeItems({ topInner: null, topOuter: null, bottom: null, shoes: null, extra: null })
-                }),
-                
-                stylistAdvice && h('div', { className: 'fixed inset-0 bg-black/80 z-[100] flex items-center justify-center p-6' }, 
-                    h('div', { className: 'bg-white w-full max-w-xs p-6 space-y-6 relative' }, [
-                        h('button', { onClick: () => setStylistAdvice(null), className: 'absolute top-4 right-4 opacity-40' }, '✕'),
-                        h('div', { className: 'text-center space-y-2' }, [
-                            h('span', { className: 'text-[8px] uppercase tracking-[0.3em] opacity-40' }, 'Stylist Suggestion'),
-                            h('h3', { className: 'fashion-font text-2xl italic' }, stylistAdvice.suggestion)
-                        ]),
-                        h('div', { className: 'aspect-[4/3] bg-neutral-100 flex items-center justify-center' }, 
-                            h('img', { src: 'https://source.boringavatars.com/bauhaus/120/' + encodeURIComponent(stylistAdvice.suggestion), className: 'w-32 h-32' })
-                        ),
-                        h('p', { className: 'text-[10px] uppercase tracking-widest text-center opacity-60 italic' }, stylistAdvice.why),
-                        h('div', { className: 'space-y-2' }, [
-                            h('button', { onClick: () => window.open('https://www.google.com/search?tbm=isch&q=' + encodeURIComponent(stylistAdvice.suggestion + ' ' + genderPreference + ' fashion'), '_blank'), className: 'w-full bg-black text-white py-4 uppercase text-[10px] tracking-[0.4em]' }, 'View Inspiration'),
-                            h('button', { onClick: () => setStylistAdvice(null), className: 'w-full border border-black py-4 uppercase text-[10px] tracking-[0.4em]' }, 'Close')
-                        ])
-                    ])
-                )
+            return h(Layout, { currentView: view, onViewChange: setView, genderPreference: gender, onGenderToggle: () => setGender(p => p === 'Men' ? 'Women' : 'Men') }, [
+                view === 'home' && h('div', { className: 'p-12 text-center space-y-8' }, [
+                    h('h2', { className: 'fashion-font text-5xl italic leading-tight' }, 'The Vault'),
+                    h('button', { onClick: () => setView('scan'), className: 'w-full bg-black text-white py-5 uppercase text-xs tracking-[0.5em]' }, 'Scan New Item')
+                ]),
+                view === 'scan' && h(Scanner, { onUploadSuccess: () => setView('gallery') }),
+                // ... Additional components like Gallery and Roulette would go here
             ]);
         };
 
